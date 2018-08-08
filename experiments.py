@@ -1,3 +1,5 @@
+from data_loading import gen_text, gen_images, gen_cross
+
 def exp_title_abs(granularity):
     if (granularity == "2clusters"):
         num_class = 2
