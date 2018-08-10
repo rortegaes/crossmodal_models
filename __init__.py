@@ -1,3 +1,3 @@
-from .data_loading import data_loading.py
-from .experiments import experiments.py
-from .models import models.py
+from .data_loading.py import data_loading
+from .experiments.py import experiments
+from .models.py import models
