@@ -1,7 +1,7 @@
 import requests
 
 def file_download():
-    print("LOADING DATASETS AND MODEL WEIGHTS")
+    '''print("LOADING DATASETS AND MODEL WEIGHTS")
 
     title_abstract_2clusters = "title_abstract_2clusters.h5"
     url = #URL ZENODO
@@ -103,7 +103,7 @@ def file_download():
     r = requests.get(url, allow_redirects=True)
     open(figures_5class_weights, 'wb').write(r.content)
 
-    print("EXPERIMENT #5 DATA LOADED") 
+    print("EXPERIMENT #5 DATA LOADED") '''
 
 def gen_text (h5path, indices,batchSize, shuffle): 
   db = h5py.File(h5path, "r")
@@ -147,3 +147,4 @@ def gen_cross (h5path, indices,batchSize,shuffle):
         by = db["labels"][batch_indices,:]
 
         yield ([bx1, bx2], by)
+
