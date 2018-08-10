@@ -1,5 +1,4 @@
 from keras.layers import Embedding, Input, Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Flatten, Dense, Dropout, LSTM, Concatenate, InputLayer, Reshape, BatchNormalization, Dropout
-#from keras.models import Model, Sequential
 from keras.metrics import categorical_accuracy
 from keras.utils import to_categorical
 from sklearn.preprocessing import MultiLabelBinarizer
