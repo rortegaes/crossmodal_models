@@ -12,7 +12,7 @@ def exp_title_abs(granularity):
         break
 
     batchSize= 64
-    n_papers = #NUMERO DE PAPERS
+    n_papers = 46953
     print ("Numero de imagenes: "+str(n_papers))
     print ("Numero de clases: "+str(num_class))
 
@@ -70,8 +70,8 @@ def exp_captions(granularity, modality):
         break
 
     batchSize= 64
-    n_papers = #NUMERO DE PAPERS
-    print ("Numero de imagenes: "+str(n_papers))
+    n_captions = 82396
+    print ("Numero de imagenes: "+str(n_captions))
     print ("Numero de clases: "+str(num_class))
 
     kfold = KFold(n_splits=10, shuffle=True)
@@ -80,7 +80,7 @@ def exp_captions(granularity, modality):
     f1s = []
     cont = 1
 
-    for train, test in kfold.split([None] * n_papers):
+    for train, test in kfold.split([None] * n_captions):
       model = models.generateTextualModel()
       model.load_weights(exp_weights)
 
@@ -126,7 +126,8 @@ def exp_figures(granularity, modality):
     else:
         print("Error calling method. Options: '2clusters' or '5class'")
         break
-
+    
+    n_images = 82396
     kfold = KFold(n_splits=10, shuffle=True)
     precisions = []
     recalls = []
@@ -157,6 +158,7 @@ def exp_figures(granularity, modality):
 
 def exp_cross():
     num_class = 2
+    n_images = 87402
     dataset = "cross.h5"
     exp_weights = "cross_weights.h5"
 
