@@ -23,7 +23,7 @@ def exp_title_abs(granularity):
     cont = 1
 
     for train, test in kfold.split([None] * n_papers):
-      model = models.generateTextualModel()
+      model = models.generateTextualModel(num_class, 157206)
       model.load_weights(exp_weights)
       
       db = h5py.File(dataset, "r")
@@ -81,7 +81,7 @@ def exp_captions(granularity, modality):
     cont = 1
 
     for train, test in kfold.split([None] * n_captions):
-      model = models.generateTextualModel()
+      model = models.generateTextualModel(num_class, 157206) #hay que cambiar el segundo argumento
       model.load_weights(exp_weights)
 
       db = h5py.File(dataset, "r")
@@ -135,7 +135,7 @@ def exp_figures(granularity, modality):
     cont = 1
 
     for train, test in kfold.split([None] * n_images):
-      model = models.generateVisualModel()
+      model = models.generateVisualModel(num_class)
       model.load_weights(exp_weights)
       
       db = h5py.File(dataset, "r")
@@ -169,7 +169,7 @@ def exp_cross():
     cont = 1
 
     for train, test in kfold.split([None] * n_images):
-      model = models.generateCrossModel(num_class)
+      model = models.generateCrossModel(num_class, 157206) #hay que revisar el segundo argumento
       model.load_weights(exp_weights)
       
       db = h5py.File(dataset, "r")
