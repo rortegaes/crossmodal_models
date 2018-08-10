@@ -9,7 +9,7 @@ def exp_title_abs(granularity):
         exp_weights = "title_abstract_5class_weights.h5"
     else:
         print("Error calling method. Options: '2clusters' or '5class'")
-        break
+        return
 
     batchSize= 64
     n_papers = 46953
@@ -54,7 +54,7 @@ def exp_captions(granularity, modality):
             exp_weights = "captions_2clusters_cross_weights.h5"
         else:
             print("Error calling method. Options: 'unimodal' or 'crossmodal'")
-            break
+            return
     if (granularity == "5clusters"):
         num_class = 5
         dataset = "captions_5class.h5"
@@ -64,10 +64,10 @@ def exp_captions(granularity, modality):
             exp_weights = "captions_5class_cross_weights.h5"
         else:
             print("Error calling method. Options: 'unimodal' or 'crossmodal'")
-            break
+            return
     else:
         print("Error calling method. Options: '2clusters' or '5class'")
-        break
+        return
 
     batchSize= 64
     n_captions = 82396
@@ -112,7 +112,7 @@ def exp_figures(granularity, modality):
             exp_weights = "figures_2clusters_cross_weights.h5"
         else:
             print("Error calling method. Options: 'unimodal' or 'crossmodal'")
-            break
+            return
     if (granularity == "5clusters"):
         num_class = 5
         dataset = "figures_5class.h5"
@@ -122,10 +122,10 @@ def exp_figures(granularity, modality):
             exp_weights = "figures_5class_cross_weights.h5"
         else:
             print("Error calling method. Options: 'unimodal' or 'crossmodal'")
-            break
+            return
     else:
         print("Error calling method. Options: '2clusters' or '5class'")
-        break
+        return
     
     n_images = 82396
     kfold = KFold(n_splits=10, shuffle=True)
