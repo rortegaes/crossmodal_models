@@ -1,4 +1,5 @@
 from keras.models import Sequential
+from keras.layers import Embedding
 
 def generateTextualModel(num_class):
       model = Sequential()
