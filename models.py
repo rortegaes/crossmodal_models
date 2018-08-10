@@ -3,7 +3,7 @@ from keras.layers import Embedding, Conv1D, MaxPooling1D, Reshape, Flatten, Dens
 
 def generateTextualModel(num_class,len_word_index):
       model = Sequential()
-      model.add(Embedding(len_word_index+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
+      model.add(Embedding(len_word_index+1, 300, embeddings_initializer="uniform", input_length=1000, trainable=True))
       model.add(Conv1D(512, 5, activation="relu"))
       model.add(MaxPooling1D(5))
       model.add(Conv1D(512, 5, activation="relu"))
