@@ -1,9 +1,9 @@
-from keras.models import Sequential
-from keras.layers import Embedding
+from keras.models import Sequential, Model
+from keras.layers import Embedding, Conv1D, MaxPooling1D, Reshape, Flatten, Dense,InputLayer, Conv2D, BatchNormalization, MaxPooling2D, Concatenate
 
-def generateTextualModel(num_class):
+def generateTextualModel(num_class,len_word_index):
       model = Sequential()
-      model.add(Embedding(len(word_index)+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
+      model.add(Embedding(len_word_index+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
       model.add(Conv1D(512, 5, activation="relu"))
       model.add(MaxPooling1D(5))
       model.add(Conv1D(512, 5, activation="relu"))
