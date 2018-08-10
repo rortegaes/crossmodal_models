@@ -1,5 +1,3 @@
-from data_loading import gen_text, gen_images, gen_cross
-
 def exp_title_abs(granularity):
     if (granularity == "2clusters"):
         num_class = 2
@@ -25,20 +23,9 @@ def exp_title_abs(granularity):
     cont = 1
 
     for train, test in kfold.split([None] * n_papers):
-      model = Sequential()
-      model.add(Embedding(len(word_index)+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
-      model.add(Conv1D(512, 5, activation="relu"))
-      model.add(MaxPooling1D(5))
-      model.add(Conv1D(512, 5, activation="relu"))
-      model.add(MaxPooling1D(5))
-      model.add(Conv1D(512, 5, activation="relu"))
-      model.add(MaxPooling1D(35))
-      model.add(Reshape((1,1,512)))
-      model.add(Flatten())
-      model.add(Dense(128, activation='relu'))
-      model.add(Dense(num_class, activation='softmax'))
+      model = models.generateTextualModel()
       model.load_weights(exp_weights)
-
+      
       db = h5py.File(dataset, "r")
       labels_test = db["labels"][test,:]
       db.close()
@@ -94,18 +81,7 @@ def exp_captions(granularity, modality):
     cont = 1
 
     for train, test in kfold.split([None] * n_papers):
-      model = Sequential()
-      model.add(Embedding(len(word_index)+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
-      model.add(Conv1D(512, 5, activation="relu"))
-      model.add(MaxPooling1D(5))
-      model.add(Conv1D(512, 5, activation="relu"))
-      model.add(MaxPooling1D(5))
-      model.add(Conv1D(512, 5, activation="relu"))
-      model.add(MaxPooling1D(35))
-      model.add(Reshape((1,1,512)))
-      model.add(Flatten())
-      model.add(Dense(128, activation='relu'))
-      model.add(Dense(num_class, activation='softmax'))
+      model = models.generateTextualModel()
       model.load_weights(exp_weights)
 
       db = h5py.File(dataset, "r")
@@ -158,31 +134,7 @@ def exp_figures(granularity, modality):
     cont = 1
 
     for train, test in kfold.split([None] * n_images):
-      model = Sequential()
-      model.add(InputLayer(input_shape=(224,224,3)))
-      model.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(MaxPooling2D(2))
-      model.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(MaxPooling2D(2))
-      model.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(MaxPooling2D(2))
-      model.add(Conv2D(512, (3,3), padding = "same", activation="relu"))
-      model.add(BatchNormalization())
-      model.add(Conv2D(512, (3,3), padding = "same", activation="relu")) 
-      model.add(BatchNormalization())
-      model.add(MaxPooling2D((28,28),2))
-      model.add(Flatten())
-      model.add(Dense(128, activation='relu'))
-      model.add(Dense(num_class, activation='softmax'))
+      model = models.generateVisualModel()
       model.load_weights(exp_weights)
       
       db = h5py.File(dataset, "r")
@@ -204,11 +156,9 @@ def exp_figures(granularity, modality):
     print("F1 Score: %.2f (+/- %.2f)" % (np.mean(f1s), np.std(f1s)))
 
 def exp_cross():
-    batchSize= 32
-    n_images = #NUMERO DE FIGURAS
     num_class = 2
-    print ("Numero de imagenes: "+str(n_images))
-    print ("Numero de clases: "+str(num_class))
+    dataset = "cross.h5"
+    exp_weights = "cross_weights.h5"
 
     kfold = KFold(n_splits=10, shuffle=True)
     precisions = []
@@ -217,63 +167,23 @@ def exp_cross():
     cont = 1
 
     for train, test in kfold.split([None] * n_images):
-        print("Entrenando con "+ str(len(train))+ " muestras y evaluando con "+str(len(test)))
-        modelCaptions = Sequential()
-        modelCaptions.add(Embedding(len(word_index)+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
-        modelCaptions.add(Conv1D(512, 5, activation="relu"))
-        modelCaptions.add(MaxPooling1D(5))
-        modelCaptions.add(Conv1D(512, 5, activation="relu"))
-        modelCaptions.add(MaxPooling1D(5))
-        modelCaptions.add(Conv1D(512, 5, activation="relu"))
-        modelCaptions.add(MaxPooling1D(35))
-        modelCaptions.add(Reshape((1,1,512)))
+      model = models.generateCrossModel(num_class)
+      model.load_weights(exp_weights)
       
-        modelImages = Sequential()
-        modelImages.add(InputLayer(input_shape=(224,224,3)))
-        modelImages.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(MaxPooling2D(2))
-        modelImages.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(MaxPooling2D(2))
-        modelImages.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(MaxPooling2D(2))
-        modelImages.add(Conv2D(512, (3,3), padding = "same", activation="relu"))
-        modelImages.add(BatchNormalization())
-        modelImages.add(Conv2D(512, (3,3), padding = "same", activation="relu")) 
-        modelImages.add(BatchNormalization())
-        modelImages.add(MaxPooling2D((28,28),2))        
+      db = h5py.File(dataset, "r")
+      labels_test = db["labels"][test,:]
+      db.close()
       
-        mergedOut = Concatenate()([modelCaptions.output,modelImages.output])
-        mergedOut = Flatten()(mergedOut)    
-        mergedOut = Dense(128, activation='relu')(mergedOut)
-        mergedOut = Dense(2, activation='softmax')(mergedOut)
-      
-      
-        newModel = Model([modelCaptions.input,modelImages.input], mergedOut)
-        
-        model.load_weights(cross_weights)
-        
-        db = h5py.File(cross, "r")
-        labels_test = db["labels"][test,:]
-        db.close()
-
-        pred = newModel.predict_generator(gen_cross(cross, test, batchSize=batchSize, shuffle=False),steps = len(test)//batchSize)
-        pred[pred >= 0.5] = 1
-        pred[pred < 0.5] = 0
-        print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], pred))
-        precisions.append(precision_score(labels_test[0:batchSize*(len(test)//batchSize)], pred, average="weighted"))
-        recalls.append(recall_score(labels_test[0:batchSize*(len(test)//batchSize)], pred, average="weighted"))
-        f1s.append(f1_score(labels_test[0:batchSize*(len(test)//batchSize)], pred, average="weighted"))
-        
-        cont= cont+1
+      pred = model.predict_generator(gen_images(dataset, test, batchSize=batchSize, shuffle=False), steps = len(test)//batchSize) 
+      maximos = np.argmax(pred,axis=1)
+      predNew = np.zeros(np.shape(pred))
+      for i in range(len(predNew)):
+        predNew[i,maximos[i]]=1
+      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew))
+      precisions.append(precision_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
+      recalls.append(recall_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
+      f1s.append(f1_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
+      cont = cont+1
     print("Precision: %.2f (+/- %.2f)" % (np.mean(precisions), np.std(precisions)))
     print("Recall: %.2f (+/- %.2f)" % (np.mean(recalls), np.std(recalls)))
     print("F1 Score: %.2f (+/- %.2f)" % (np.mean(f1s), np.std(f1s)))
