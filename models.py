@@ -42,9 +42,9 @@ def generateVisualModel(num_class):
       model.add(Dense(128, activation='relu'))
       model.add(Dense(num_class, activation='softmax'))
       return model
-def generateCrossModel(num_class):
+def generateCrossModel(num_class,len_word_index):
       modelCaptions = Sequential()
-      modelCaptions.add(Embedding(len(word_index) + 1,embedding_dimensions, weights = [embedding_matrix], input_length = max_sequence_length,trainable = False))
+      modelCaptions.add(Embedding(len_word_index+1, 300, embeddings_initializer="uniform", input_length=1000, trainable=True))      
       modelCaptions.add(Conv1D(512, 5, activation="relu"))
       modelCaptions.add(MaxPooling1D(5))
       modelCaptions.add(Conv1D(512, 5, activation="relu"))
