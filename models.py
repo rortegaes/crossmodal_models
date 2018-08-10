@@ -1,25 +1,4 @@
-from keras.layers import Embedding, Input, Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Flatten, Dense, Dropout, LSTM, Concatenate, InputLayer, Reshape, BatchNormalization, Dropout
-from keras.metrics import categorical_accuracy
-from keras.utils import to_categorical
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics import classification_report, f1_score, precision_score, recall_score
-from sklearn.model_selection import KFold
-import numpy as np
-import json
-from keras.applications.vgg16 import VGG16
-from keras.preprocessing import image
-from keras.applications.vgg16 import preprocess_input
-import glob
-import os
-from keras import optimizers
-import sys
-from scipy import misc
-import shutil
-import h5py
-from PIL import Image
-import time
-import gc
-import pickle
+from keras.models import Sequential
 
 def generateTextualModel(num_class):
       model = Sequential()
