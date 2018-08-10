@@ -1,3 +1,5 @@
+from keras.models import Sequential
+
 def generateTextualModel(num_class):
       model = Sequential()
       model.add(Embedding(len(word_index)+1, 300, embeddings_initializer="uniform", input_length=max_sequence_length, trainable=True))
