@@ -81,7 +81,7 @@ def exp_captions(granularity, modality):
     cont = 1
 
     for train, test in kfold.split([None] * n_captions):
-      model = models.generateTextualModel(num_class, 157206) #hay que cambiar el segundo argumento
+      model = models.generateTextualModel(num_class, 81746) #hay que cambiar el segundo argumento
       model.load_weights(exp_weights)
 
       db = h5py.File(dataset, "r")
