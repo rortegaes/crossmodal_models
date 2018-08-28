@@ -53,7 +53,7 @@ def getIndices(granularity):
                 correct_class.append(l)
     return indices_res, correct_class
 
-def showCAM(granularity):
+def getCAM(granularity):
     if (granularity == "2clusters"):
         num_class = 2
         dataset = "figures_2clusters.h5"
