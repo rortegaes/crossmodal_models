@@ -93,6 +93,7 @@ def getCAM(granularity):
         cam, heatmap = grad_cam(exp_weights_mix, img, predicted_class)
         cv2.imwrite("mix-"+str(indice)+".png", cam)
         cv2.imwrite("mix-heatmap"+str(indice)+".png", heatmap)
+    return indices
   
 def target_category_loss(x, category_index, nb_classes):
     return tf.multiply(x, K.one_hot([category_index], nb_classes))
