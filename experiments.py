@@ -35,7 +35,7 @@ def exp_title_abs(granularity):
       predNew = np.zeros(np.shape(pred))
       for i in range(len(predNew)):
         predNew[i,maximos[i]]=1
-      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew))
+      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew, digits=4))
       precisions.append(precision_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       recalls.append(recall_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       f1s.append(f1_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
@@ -93,7 +93,7 @@ def exp_captions(granularity, modality):
       predNew = np.zeros(np.shape(pred))
       for i in range(len(predNew)):
         predNew[i,maximos[i]]=1
-      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew))
+      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew, digits=4))
       precisions.append(precision_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       recalls.append(recall_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       f1s.append(f1_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
@@ -147,7 +147,7 @@ def exp_figures(granularity, modality):
       predNew = np.zeros(np.shape(pred))
       for i in range(len(predNew)):
         predNew[i,maximos[i]]=1
-      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew))
+      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew, digits=4))
       precisions.append(precision_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       recalls.append(recall_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       f1s.append(f1_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
@@ -181,7 +181,7 @@ def exp_cross():
       predNew = np.zeros(np.shape(pred))
       for i in range(len(predNew)):
         predNew[i,maximos[i]]=1
-      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew))
+      print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew, digits=4))
       precisions.append(precision_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       recalls.append(recall_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
       f1s.append(f1_score(labels_test[0:batchSize*(len(test)//batchSize)], predNew, average="weighted"))
