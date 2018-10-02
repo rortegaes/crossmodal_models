@@ -5,7 +5,7 @@ from sklearn.metrics import classification_report, f1_score, precision_score, re
 from sklearn.model_selection import KFold
 from keras import optimizers
 
-def exp_title_abs(granularity):
+def exp_title_abs(granularity, n_papers):
     if (granularity == "2clusters"):
         num_class = 2
         dataset = "./weights/title_abstract_2clusters.h5"
@@ -21,7 +21,7 @@ def exp_title_abs(granularity):
         return
 
     batchSize= 32
-    n_papers = 4694
+    #n_papers = 4694
     print ("Number of images: "+str(n_papers))
     print ("Number of classes: "+str(num_class))
 
@@ -41,7 +41,7 @@ def exp_title_abs(granularity):
         predNew[i,maximos[i]]=1
     print(classification_report(labels_test[0:batchSize*(len(test)//batchSize)], predNew, digits=4, target_names = target_names))
 
-def exp_captions(granularity, modality, training=False):
+def exp_captions(granularity, modality, n_captions, training=False):
     if (granularity == "2clusters"):
         num_class = 2
         target_names = ['Health','Tech']
@@ -71,7 +71,7 @@ def exp_captions(granularity, modality, training=False):
         return
     if(training == False):
         batchSize= 32
-        n_captions = 8239
+        #n_captions = 8239
         print ("Number of images: "+str(n_captions))
         print ("Number of classes: "+str(num_class))
 
@@ -120,7 +120,7 @@ def exp_captions(granularity, modality, training=False):
 			
 	        break
 	
-def exp_figures(granularity, modality, training=False):
+def exp_figures(granularity, modality, n_images, training=False):
     if (granularity == "2clusters"):
         num_class = 2
         target_names = ['Health', 'Tech']
@@ -150,7 +150,7 @@ def exp_figures(granularity, modality, training=False):
         return
     if(training == False):	
         batchSize = 32
-        n_images = 8239
+        #n_images = 8239
 		
         print ("Number of images: "+str(n_images))
         print ("Number of classes: "+str(num_class))
@@ -203,7 +203,7 @@ def exp_figures(granularity, modality, training=False):
 			
 	        break
 
-def exp_cross(training):
+def exp_cross(n_images, training):
     num_class = 2
     dataset = "./weights/cross.h5"
     exp_weights = "./weights/cross_weights.h5"
