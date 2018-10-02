@@ -1,4 +1,6 @@
 import requests
+import h5py
+import numpy as np
 
 def file_download():
     '''print("LOADING DATASETS AND MODEL WEIGHTS")
@@ -142,7 +144,7 @@ def gen_cross (h5path, indices,batchSize,shuffle):
         batch_indices = indices[i:i+batchSize]
         batch_indices.sort()
         
-        bx1 = db["captions"][batch_indices,:]
+        bx1 = db["text"][batch_indices,:]
         bx2 = db["images"][batch_indices,:,:,:]
         by = db["labels"][batch_indices,:]
 
