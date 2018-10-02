@@ -2,28 +2,38 @@ from keras import applications
 from keras import backend as K
 import cv2
 import random
+from crossmodal_models import models, data_loading
+import numpy as np
+import h5py
+from PIL import Image
+from keras.layers.core import Lambda
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
 def getIndices(granularity):
     if (granularity == "2clusters"):
         num_class = 2
-        dataset = "figures_2clusters.h5"
-        exp_weights_uni = "figures_2clusters_weights.h5"
-        exp_weights_mix = "figures_2clusters_weights_cross.h5"
+        dataset = "./weights/quality2clusters.h5"
+        exp_weights_uni = "./weights/qualityUni2clusters.h5"
+        exp_weights_mix = "./weights/qualityMix2clusters.h5"
 
-    if (granularity == "5clusters"):
+    elif (granularity == "5class"):
         num_class = 5
-        dataset = "figures_5class.h5"
-        exp_weights_uni = "figures_5class_weights.h5"
-        exp_weights_mix = "figures_5class_weights_cross.h5"
+        dataset = "./weights/quality5class.h5"
+        exp_weights_uni = "./weights/qualityUni5class.h5"
+        exp_weights_mix = "./weights/qualityMix5class.h5"
+
+    else:
+        print("Error")
 
     n_images = 8192
-    test = range (0,n_images)
+    test = list(range (0,n_images))
     batchSize = 64
 
     modelUni = models.generateVisualModel(num_class)
     modelUni.load_weights(exp_weights_uni)
 
-    pred1 = modelUni.predict_generator(gen_images(dataset, test, batchSize=batchSize,shuffle=False),steps = len(test)//batchSize)
+    pred1 = modelUni.predict_generator(data_loading.gen_images(dataset, test, batchSize=batchSize,shuffle=False),steps = len(test)//batchSize)
     maximos1 = np.argmax(pred1,axis=1)
     predNew1 = np.zeros(np.shape(pred1))
     for i in range(len(predNew1)):
@@ -32,7 +42,7 @@ def getIndices(granularity):
     modelMix = models.generateVisualModel(num_class)
     modelMix.load_weights(exp_weights_mix)
 
-    pred2 = modelMix.predict_generator(gen_images(dataset, test, batchSize=batchSize,shuffle=False),steps = len(test)//batchSize)
+    pred2 = modelMix.predict_generator(data_loading.gen_images(dataset, test, batchSize=batchSize,shuffle=False),steps = len(test)//batchSize)
     maximos2 = np.argmax(pred2,axis=1)
     predNew2 = np.zeros(np.shape(pred2))
     for i in range(len(predNew2)):
@@ -51,49 +61,67 @@ def getIndices(granularity):
         for l in range(0,num_class):
             if (predNew2[k,l]==1):
                 correct_class.append(l)
-    return indices_res, correct_class
+    return indices_res, correct_class, pred1, pred2
 
 def getCAM(granularity):
     if (granularity == "2clusters"):
         num_class = 2
-        dataset = "figures_2clusters.h5"
-        exp_weights_uni = "figures_2clusters_weights.h5"
-        exp_weights_mix = "figures_2clusters_weights_cross.h5"
+        dataset = "./weights/quality2clusters.h5"
+        exp_weights_uni = "./weights/qualityUni2clusters.h5"
+        exp_weights_mix = "./weights/qualityMix2clusters.h5"
 
-    if (granularity == "5clusters"):
+    elif (granularity == "5class"):
         num_class = 5
-        dataset = "figures_5class.h5"
-        exp_weights_uni = "figures_5class_weights.h5"
-        exp_weights_mix = "figures_5class_weights_cross.h5"
+        dataset = "./weights/quality5class.h5"
+        exp_weights_uni = "./weights/qualityUni5class.h5"
+        exp_weights_mix = "./weights/qualityMix5class.h5"
+    else:
+        print("Error")
         
-    indices_res, correct_class = getIndices(granularity)
-    i0 = random.choice(indices_res)
-    i1 = random.choice(indices_res)
-    i2 = random.choice(indices_res)
-    i3 = random.choice(indices_res)
+    indices_res, correct_class, pred1, pred2 = getIndices(granularity)
+    i0 = random.randint(0,len(indices_res))
+    i1 = random.randint(0,len(indices_res))    
+    i2 = random.randint(0,len(indices_res))
+    i3 = random.randint(0,len(indices_res))
     indices = [i0,i1,i2,i3]
+    ids = [indices_res[i0],indices_res[i1],indices_res[i2],indices_res[i3]]
     for indice in indices:
+        i = indices_res[indice]
         predicted_class = correct_class[indice]
-        predMix = pred2[indice,predicted_class]
-        predUni = pred1[indice,predicted_class]
+        predUni = pred1[i,predicted_class]
+        predMix = pred2[i,predicted_class]
         diff = predMix - predUni
-        print ("Diferencia de "+str(indice)+": "+str(diff*100)+"(Uni: "+str(predUni)+"; Mix: "+str(predMix)+")")
+        print ("Diferencia de "+str(i)+": "+str(diff*100)+"(Uni: "+str(predUni)+"; Mix: "+str(predMix)+")")
         list_img = []
         db = h5py.File(dataset, "r")
-        original_img = db["images"][indice,:,:,:]
+        original_img = db["images"][i,:,:,:]
         img_fr_a = Image.fromarray(original_img, 'RGB')
-        img_fr_a.save(str(indice)+".png")
+        img_fr_a.save("./images/"+str(i)+".png")
         db.close()
         list_img.append(original_img)
         img = np.array(list_img)
             
-        cam, heatmap = grad_cam(exp_weights_uni, img, predicted_class)
-        cv2.imwrite("uni-"+str(indice)+".png", cam)
-        cv2.imwrite("uni-heatmap"+str(indice)+".png", heatmap)
-        cam, heatmap = grad_cam(exp_weights_mix, img, predicted_class)
-        cv2.imwrite("mix-"+str(indice)+".png", cam)
-        cv2.imwrite("mix-heatmap"+str(indice)+".png", heatmap)
-    return indices
+        cam, heatmap = grad_cam(exp_weights_uni, img, predicted_class, num_class)
+        cv2.imwrite("./images/uni-"+str(i)+".png", cam)
+        cv2.imwrite("./images/uni-heatmap"+str(i)+".png", heatmap)
+        cam, heatmap = grad_cam(exp_weights_mix, img, predicted_class, num_class)
+        cv2.imwrite("./images/mix-"+str(i)+".png", cam)
+        cv2.imwrite("./images/mix-heatmap"+str(i)+".png", heatmap)
+    for index in ids:
+    	img0 = cv2.imread("./images/mix-"+str(index)+".png", flags=cv2.IMREAD_COLOR)
+    	img1 = cv2.imread("./images/uni-"+str(index)+".png", flags=cv2.IMREAD_COLOR)
+    	img2 = cv2.imread("./hq_images/"+str(index)+".png", flags=cv2.IMREAD_COLOR)
+    	fig = plt.figure()
+    	fig.set_size_inches(18.5, 10.5, forward=True)
+    	ax1 = fig.add_subplot(131)
+    	ax1.set_title("Unimodal. ID: "+str(index))
+    	ax1.imshow(img0)
+    	ax2 = fig.add_subplot(133)
+    	ax2.set_title("Crossmodal. ID: "+str(index))
+    	ax2.imshow(img1)
+    	ax2 = fig.add_subplot(132)
+    	ax2.set_title("Original image. ID: "+str(index))
+    	ax2.imshow(img2)
   
 def target_category_loss(x, category_index, nb_classes):
     return tf.multiply(x, K.one_hot([category_index], nb_classes))
@@ -127,31 +155,7 @@ def modify_backprop(model, name):
                 layer.activation = tf.nn.relu
 
         # re-instanciate a new model
-        new_model = Sequential()
-        new_model.add(InputLayer(input_shape=(224,224,3)))
-        new_model.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(MaxPooling2D(2))
-        new_model.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(MaxPooling2D(2))
-        new_model.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(MaxPooling2D(2))
-        new_model.add(Conv2D(512, (3,3), padding = "same", activation="relu"))
-        new_model.add(BatchNormalization())
-        new_model.add(Conv2D(512, (3,3), padding = "same", activation="relu")) 
-        new_model.add(BatchNormalization())
-        new_model.add(MaxPooling2D((28,28),2))
-        new_model.add(Flatten())
-        new_model.add(Dense(128, activation='relu'))
-        new_model.add(Dense(num_class, activation='softmax'))
+        new_model = models.generateVisualModel(num_class)
         #new_model.load_weights('./models/modelMixHvsT1.h5')
     return new_model
 
@@ -185,32 +189,8 @@ def deprocess_image(x):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
-def grad_cam(weights, image, category_index):
-    input_model = Sequential()
-    input_model.add(InputLayer(input_shape=(224,224,3)))
-    input_model.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(Conv2D(64, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(MaxPooling2D(2))
-    input_model.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(Conv2D(128, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(MaxPooling2D(2))
-    input_model.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(Conv2D(256, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(MaxPooling2D(2))
-    input_model.add(Conv2D(512, (3,3), padding = "same", activation="relu"))
-    input_model.add(BatchNormalization())
-    input_model.add(Conv2D(512, (3,3), padding = "same", activation="relu")) 
-    input_model.add(BatchNormalization())
-    input_model.add(MaxPooling2D((28,28),2))
-    input_model.add(Flatten())
-    input_model.add(Dense(128, activation='relu'))
-    input_model.add(Dense(num_class, activation='softmax'))
+def grad_cam(weights, image, category_index, num_class):
+    input_model = models.generateVisualModel(num_class)
     input_model.load_weights(weights)
     nb_classes = num_class
     target_layer = lambda x: target_category_loss(x, category_index, nb_classes)
